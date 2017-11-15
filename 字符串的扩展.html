@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		//es6 加强了对Unicode的支持，并扩展了字符串对象。
+		 
+		// es6 又提供了3中新的方法 来确定一个字符串是否包含在另一个字符串中。
+		//  includes(): 返回布尔值，表示是否找到了参数字符串。
+		//  stratsWith():返回布尔值，表示字符串是否在原字符串的头部
+		//  endsWith():返回布尔值，表示字符串是否在原字符串的尾部
+		//  三个方法都支持第二个参数，表示开始搜索的位置。
+		//  endsWith()方法与其他俩个方法不同。它针对前n个字符，其他是从第n个位置开始。
+		let s = "hello world!";
+		console.log(s.startsWith("h")); // true
+		s.includes("e");
+		console.log(s.endsWith("!")); //true
+
+		//repeat() 返回一个新字符串，表示将原来的字符串重复n次
+		let x = "x".repeat(2);  //xx 重复俩次
+		let y = "y".repeat(2.9); // 如果是小数，则会被取整。
+		//let z = "z".repeat(Infinity); // 如果是Infinity 或者负数都会报错
+		let b = "b".repeat(0.9); // 如果是0到1之间的小数，则同等于0,NaN也一样。
+		// padStart padEnd  字符串补全函数 ，如果字符串不够指定的长度，则在头部或尾部补全。
+		let a = "aaa".padStart(5,"bb"); // bbaaa
+		let e = "bbb".padEnd(5,"aa"); // bbbaa
+		// 如果原字符串的长度，等于或者大于指定的最小长度，则返回原来的字符串。
+		let ss = "xxxx".padStart(3,"ab") // xxxx
+		// 如果用来补全的字符串与原字符串，两者的长度之和超过了指定的最小长度，则会截去超出位数的补全字符串。
+		let aa = "aaa".padStart(10,"0123456789"); //0123456aaa
+		//  如果省略第二个参数，则会使用空格补全长度
+		let aaa = "aaa".padStart(10); //        aaa
+		
+		//模板字符串  使用(`)反引号标识  可以定义多行字符串，也可以在其中嵌入变量
+		`
+			模板字符串模板字符串模板字符串模板字符串模板字符串模板字符串模板字符串模板字符串模板字符串模板字符串
+			模板字符串模板字符串
+		`  
+		// 如果需要嵌入变量，则需要将变量名写在${}之中
+		// 
+		let name = "陈";
+		let h = `
+			我姓${name}.
+		`
+		console.log(h);  // 我姓陈. 
+		// 但是会保留其中的空格和换行，可以使用trim方法去除。
+		// 大括号的内部可以放入任意的javascript表达式，可以进行运算，以及引用对象属性。
+		
+		let num1 = 1;
+		let num2 = 2;
+		let obj = {x:1,y:2};
+		var str  = `${num1} + ${num2} = ${num1 + num2}` // 1 + 2 = 3
+		var str2 = `${num1} + ${num2 * 2} = ${num1 + num2 * 2}` //1 + 4 = 5
+		var str3 = `${obj.x + obj.y}`  // 3 
+		//模板中还可以调用函数
+		function fn(){
+			return "hello world";  // 
+		}
+		function fn2(num1,num2){
+			return num1+num2;
+		}
+
+		var str4 = ` ${fn()}` //  hello world
+		var str5 = `${fn2(5,2)}`  // 7 
+		// 如果大括号中的值不是字符串，则按照一般规则转换为字符串，如果是对象，将调用对象的toString方法。
+		// 如果没有变量则会报错。
+		console.log(str5); 
+
+		// 模板字符串中还可以嵌套模板字符串   
+		const data = [
+			{first:'<Jane>',last:"Bond"},
+			{first:'lars',last:'<Croft>'}
+		]
+		const tmpl = add =>`
+			<table>
+				${add.map(arr => `
+					<tr><td>${arr.first}</td></tr>
+					<tr><td>${arr.last}</td></tr>
+				`).join("")}
+			</table>
+		`
+		/*
+			
+			<table>
+				
+					<tr><td><Jane></td></tr>
+					<tr><td>Bond</td></tr>
+				
+					<tr><td>lars</td></tr>
+					<tr><td><Croft></td></tr>
+				
+			</table>
+		 */
+		console.log(tmpl(data));
+		//如果需要引用模板字符串本身，在需要时执行，可以像下面这样写。
+		let strs = 'return ' + '`Hello ${name}!`';
+		let func = new Function('name', strs);
+		func('Jack') // "Hello Jack!"
+
+		// 标签模板 模板字符串可以紧跟在一个函数名后面，该函数可以用来处理这个模板字符串
+	    //alert`132`;  //等价于 alert(123);
+	    //  但是如果模板字符串里面有变量，就不是简单的调用了，而是会将模板字符串先处理成多个参数，在调用函数
+	    function tag(s,v1,v2){
+	    	console.log(s);
+	    	console.log(v1);
+	    	console.log(v2);
+	    	return "OK";
+	    } 
+
+	    let i = 5;
+	    let j = 10;
+	    tag`hello ${i+j} world ${i * j}`;  //等价于tag(['Hello ', ' world ', ''], 15, 50)
+		//第一个参数是数组，成员是模板字符串中没有变量的部分，tag函数的其他参数，都是模板字符串各个变量被替换后的值。由于本例中，模板字符串含有两个变量，因此tag会接受到value1和value2两个参数。
+		let total = 30;
+		let msg = passthru`the total is ${total} (${total*1.05} with tax)`;
+		function passthru(literals){
+			let result = "";
+			let i = 0;
+			while (i < literals.length) {
+				result += literals[i++];
+				if(i < arguments.length) {
+					result += arguments[i];
+				}
+			}
+			return result;
+		}
+		console.log(msg);
+	</script>
+</body>
+</html>

@@ -161,6 +161,21 @@
 			f([1,2,3]);
 			function f2({x,y,z}){};
 			f({z:1,y:3,x:2});
+			// 提取json数据 
+			let jsonData = {
+				id:1,
+				status:"ok",
+				data:[123,23]
+			};
+			let { id,status,data:number} = jsonData;
+			console.log(id,status,number);// 1,"OK",[123,23];
+			// 指定函数参数的默认值
+			function f(url,{
+				a = true;
+				b = function() {0}
+			}){
+				//do something
+			}
 	</script>
 </body>
 </html>
