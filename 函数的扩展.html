@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		// 函数参数的默认值 。
+		// es6之前无法进行对函数的参数指定默认值，只能采用变通的方法。
+		
+		function log(x,y){
+			y = y || "world";
+			console.log(x,y);
+		} 
+		log("hello")  //hello world
+		log("hello","China"); //hello China
+		log("hello",""); //hello world   // 这样如果传入的参数赋值了，但是对应的布尔值为false，则赋值也不起作用，还要进判断一下参数。
+
+		// es6 允许直接为函数的参数设置默认值 ，直接写在参数的后面即可。
+		function log2(x,y = "world") {
+			console.log(x,y)
+		}
+
+		log2("hello")  //hello world
+		log2("hello","China"); //hello China
+		log2("hello",""); //hello  
+
+		function Point (x = 0,y = 0) {
+			this.x = x;
+			this.y = y;
+		}
+		const p = new Point();
+		p // { x:0, y:0}
+	    // 使用时，函数不能有同名参数 
+	    // 参数默认值不是传值的，而是每次都重新计算默认值表达式的值。也就是说，参数默认值是惰性求值的。
+	    let x = 99; 
+	    function foo(p = x + 1){
+	    	console.log(p);
+	    }
+	    foo() //100
+	    x = 100 ;
+		foo() // 101 
+	</script> 
+</body>
+</html>

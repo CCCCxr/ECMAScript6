@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		// 二进制和八进制的表示法 ES6提供了二进制和八进制数值新的写法 0b(0B)和0o(0O);
+		// 如果要讲0b和0o前缀的数值转为十进制，要使用Number方法;
+		 
+		// Number.isFinite()，Number.isNaN() 
+		// Number.isFinite() 用来检测一个数值是否为有限的.返回布尔值。r
+		Number.isFinite(15); //true
+		Number.isFinite(15.1); //true
+		Number.isFinite(NaN);   //false
+		Number.isFinite(Infinity); //false
+		Number.isFinite("foo"); //false
+		Number.isFinite("15"); //false
+		Number.isFinite(true); //false
+		// Number.isNaN() 用来检测一个值是否为NaN,返回布尔值
+		Number.isNaN(NaN) // true
+		Number.isNaN(15) // false
+		Number.isNaN('15') // false
+		Number.isNaN(true) // false
+		Number.isNaN(9/NaN) // true
+		Number.isNaN('true'/0) // true
+		Number.isNaN('true'/'true') // true 
+
+		// Number.parseInt() . Number.parseFloat() ES6将这俩个方法移植到了Number对象上，行为保持不变。
+		// Number.isInteger() 判断一个值是否为整数。
+		Number.isInteger(20) // true 
+		Number.isInteger(20.0) // true  因为整数和浮点数采取的都是同样的储存方法，所以被视为同一个值
+		Number.isInteger(25.1) // false
+		Number.isInteger("15") // false
+		Number.isInteger(true) // false
+
+		//Math部分 
+		
+		//Math.trunc() 去除一个数的小数部分，返回整数部分 
+		Math.trunc(4.1) // 4 
+		Math.trunc(4.9) // 4
+		Math.trunc(-4.1) //4 
+		Math.trunc(0.54) //0 
+		//非数值会调用Number方法转为数值
+		Math.trunc(true) // 1
+		Math.trunc(false)// 0
+		Math.trunc(null) // 0
+		// 空值和无法截取整数的值，返回NaN
+		Math.trunc(); //NaN
+		Math.trunc("foo") // NaN
+
+		//Math.sign() 判断一个数到底是正数，负数还是0，对于非数值，会先转为数值 
+		Math.sign(-5) // -1   负数返回-1 
+		Math.sign(5) // +1    正数返回+1 
+		Math.sign(0) // +0    正数0 返回+0
+		Math.sign(-0) // -0   负数0 返回-0
+		Math.sign(NaN) // NaN 非数值和不能转为数值的，返回 NaN
+
+		//Math.cbrt() 计算一个数的立方根
+		Math.cbrt(-1) // -1 
+		Math.cbrt(0)  // 0
+		Math.cbrt(1)  // 1 
+		Math.cbrt(NaN) // NaN 非数值也是返回NaN
+
+		//还有很多 建议查看文档
+		
+
+		// Integer 数据类型  整数类型，表示整数，只能用来表示整数，没有位数限制。 使用后缀n表示
+		 
+		1n+2n //3n
+
+		typeof 12n // integer  
+
+		// 运算方面与Number的行为一致，除法运算会舍去小数部分，返回一个整数
+		1n*2n // 2n 
+		9n / 5n  // 1n  
+		// integer与Number 不能进行混合运算
+		1n + 1 // 报错 
+
+		//  == 相等运算符会改变数据类型，也是不能进行混合使用
+		0n == 0 //报错
+		// === 精确相等不会改变数据类型，可以进行混合使用
+		0n === 0 //false 
+	</script>
+</body>
+</html>	
