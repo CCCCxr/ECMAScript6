@@ -123,7 +123,7 @@
 		function move({x = 0,y = 0} = {}){
 			return [x,y];
 		}
-		move({x:3,y:3}); // [3,8]
+		move({x:3,y:3}); // [3,3]
 		move({x:3}); // [3,0]
 		move({}); // [0,0]
 		move(); // [0,0]
@@ -131,7 +131,7 @@
 		function move2({x ,y} = { x: 0 ,y : 0}){
 			return [x,y];
 		}
-		move({x:3,y:3}); // [3,8]
+		move({x:3,y:3}); // [3,3]
 		move({x:3,y:undefined}); // [3,0] 传入undefined 就会触发函数参数的默认值。
 		move({x:3}); // [3,undefined]
 		move({}); // [undefined,undefined]

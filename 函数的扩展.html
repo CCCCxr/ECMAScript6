@@ -6,7 +6,7 @@
 </head>
 <body>
 	<script>
-		// 函数参数的默认值 。
+		// 1 函数参数的默认值 。
 		// es6之前无法进行对函数的参数指定默认值，只能采用变通的方法。
 		
 		function log(x,y){
@@ -41,6 +41,248 @@
 	    foo() //100
 	    x = 100 ;
 		foo() // 101 
-	</script> 
+
+		// 与解构赋值默认值结合使用 
+		
+		function foo({x, y = 5}){
+			console.log(x,y);
+		}
+		foo({}); // undefined 5 
+		foo({x:1}); // 1 5 
+		foo({x:1,y:2}) //  1 2 
+		foo() // TypeError: Cannot read property 'x' of undefined   因为只使用了对象的解构赋值，没有使用函数参数的默认值，所以会报错
+
+		function foo1({x,y = 5} = {}){
+			console.log(x,y);
+		}
+		foo1(); // undefined 5 
+
+		function fetch(url,{body = "",method = "GET" , header = {}}){
+			console.log(method);
+		}
+		fetch('http://example.com',{}); // GET 
+		fetch('http://example.com') // 报错 
+		//上面代码中，如果函数fetch的第二个参数是一个对象，就可以为它的三个属性设置默认值。这种写法不能省略第二个参数，如果结合函数参数的默认值，就可以省略第二个参数。这时，就出现了双重默认值。
+		function fetch2(url, { body = '', method = 'GET', headers = {} } = {}) {
+			console.log(method);
+		}
+
+		fetch('http://example.com') //GET
+		//上面代码中，函数fetch2没有第二个参数时，函数参数的默认值就会生效，然后才是解构赋值的默认值生效，变量method才会取到默认值GET。
+
+		// 参数默认值的位置，应该放在函数参数的尾部，这样能够看出省略了哪些参数，如果非尾部的参数设置了默认值，实际上这个参数是无法省略的。
+		
+		function f(x = 1, y) {
+			return [x,y];
+		}
+		f()； // [1,undefined] 
+		f(2); // [2,undefined]
+		f(,1) // 报错
+		f(undefined,1) ; // [1,1]  传入undefined，则触发改参数的默认值，null并没有这个效果
+
+		function f2(x,y = 5,z){
+			return [x,y,z]; 
+		}
+		f2(); // [undefined,5,undefined]
+		f2(2); // [2,5,undefined]
+		f2(1,,2); // 报错 
+		f2(1,undefined,2);// [1,5,2]
+
+		// 函数的length 属性   函数的length将会获得形参的个数
+		// 设定了默认值以后，函数的length属性将会返回没有指定默认值的形参的个数。
+		(function(a){}).length //1 
+		(function(a = 5){}).length // 0
+		(function(a,b,c = 5){}).length // 2 
+
+		// 作用域
+		//  一旦设置了参数的默认值，函数进行声明初始化时，参数会形成一个单独的作用域。等到初始化结束，这个作用域就会消失。 
+		var x = 1;
+		function f3(x, y = x) {
+			console.log(y);
+		}
+		f3(2); // 2 调用时，参数就形成了一个单独的作用域。在这个作用域里面，y的默认值指向的是第一个参数x，而不是全局的X。
+		
+		//  2 rest 参数  形式为(...变量名) ，用于获取函数的多余参数，这样就不需要是民用arguments对象了。
+		function add(...values) {
+			let sum = 0;
+
+			for (var val of values) {
+				sum += val;
+			}
+
+			return sum;
+		}
+
+		add(2, 5, 3) // 10
+		  // arguments对象只是一个类数组对象，要先使用Array.prototype.slice.call方法将其转换为数组才能调用数组方法，
+		  // rest则不存在这个问题。
+		  // rest 参数之后不能再有其他参数，函数的length属性也不包括rest参数。
+
+		//3 name 属性   函数的name属性 返回函数的函数名 
+		/*
+			如果将一个匿名函数赋值给一个变量，es5返回空字符串，es6则返回函数名，
+			如果将一个具名函数赋值给一个变量，name属性则返回这个函数原本的名字，
+			Function构造函数返回的函数实例，name属性的值为anonymous，
+			bind返回的函数，name属性值会加上bound前缀。
+			*/  
+
+
+		//4 箭头函数 
+
+		//ES6 允许使用“箭头”（=>）定义函数。 
+		var f = v => v; 
+		// 等同于 
+		var f = function(v) {
+			return v;
+		};
+
+		// 如果箭头函数不需要参数或者需要多个参数，就使用一个圆括号代表参数部分。
+		var f1 = function () { return 5 };
+		//等同于 
+		var f1 = () => 5;
+
+		var f2 = function(num1,num2){return num1+num2} ;
+		//等同于 
+		var f2 = (num1,num2) => num1+num2;
+
+		// 如果返回的语句大于一条语句，则用大括号将他们括起来，并且使用return语句返回。
+
+		var sum = (num1, num2) => { return num1 + num2; }
+
+		// 如果箭头函数返回的是一个对象，则必须在对象外面加上括号，否则就会报错。
+		let getTempItem = id => ({ id: id, name: "Temp" });
+
+		// 箭头函数可以与变量解构结合使用。
+		const full = ({first,last}) => first + "" +last;	
+		 	//等同于
+		 	function full(person){
+		 		return person.first + " " +person.last;
+		 	}	  
+
+		// 箭头函数的一个用处就是用来简化回调函数 
+		 	// 正常写法
+		 	[1,2,3].map(function(x) {
+		 		return x*x;
+		 	})
+
+		// 箭头函数写法
+		[1,2,3].map(x => x * x);
+
+		// 还可以与rest参数结合
+
+		const numbers = (...nums) => nums;
+
+		numbers(1,2,3,4,5) //[1,2,3,4,5]
+
+		const headAndTail = (head,...tail) => [head,tail];
+
+		headAndTail(1,2,3,4,5); // [1,[2,3,4,5]
+
+        /*
+			箭头函数使用注意点：
+				1 函数内的this对象就是定义时所在的对象，而不是使用时所在的对象。
+				2 不可以当做构造函数使用。
+				3 不可以使用arguments对象，可以使用rest代替。
+				4 不可以使用yield命令，因此箭头函数不能用作 Generator 函数。
+				*/
+
+        // 箭头函数的 this对象的指向是固定的。
+
+
+        function foo(){
+         	setTimeout(() => {
+         		console.log("id:",this.id);
+         	},100)
+        }
+
+        var id = 21;
+
+        foo.call({id:42}); 
+        //  id:42 
+
+        //   setTimeout 的参数是一个箭头函数，这个箭头函数定义生效是在foo函数生成时，
+        // 而它真正执行要等到100毫秒以后。如果是普通的函数，执行的时候this指向的是window,z
+        // 这个时候输出的是21，但是箭头函数导致this总是指向函数生效时所在的对象({id:42})，所以输出的是42
+
+
+        // 箭头函数可以让setTimeout里面的this，绑定定义时所在的作用域，而不是指向运行时所在的作用域
+
+        function Timer() {
+         	this.s1 = 0;
+         	this.s2 = 0;
+
+         	// 箭头函数 
+         	setInterval(() => this.s1++ ,1000);
+
+         	// 普通函数
+         	setInterval(function() {
+         		this.s2++;
+         	},1000);
+        }
+
+        var timer = new Timer();
+
+        setTimeout(() => console.log("s1:",timer.s1),3000);
+        setTimeout(() => console.log("s2:",timer.s2),3000);
+        /*
+			上面代码中，Timer函数内部设置了两个定时器，分别使用了箭头函数和普通函数。前者的this绑定定义时所在的作用域（即Timer函数），后者的this指向运行时所在的作用域（即全局对象）。所以，3100 毫秒之后，timer.s1被更新了 3 次，而timer.s2一次都没更新。
+			*/
+
+        // 5 双冒号运算符
+        /*
+			箭头函数可以绑定this对象，大大减少了显式绑定this对象的写法（call、apply、bind）。
+			但是，箭头函数并不适用于所有场合，所以现在有一个提案，提出了“函数绑定”（function 
+			bind）运算符，用来取代call、apply、bind调用。
+
+			函数绑定运算符是并排的两个冒号（::），双冒号左边是一个对象，右边是一个函数。该运算
+			符会自动将左边的对象，作为上下文环境（即this对象），绑定到右边的函数上面。
+			*/
+        foo::bar; // 等同于 bar.bind(foo);
+
+        foo::bar(...arguments); // 等同于 bar.apply(foo,arguments);
+
+        // 如果双冒号左边为空，右边是一个对象的方法，则等于将改方法绑定在该对象上面。
+
+        var method = obj::obj.foo;
+		// 等同于
+		var method = ::obj.foo;
+
+		let log = ::console.log;
+		// 等同于
+		var log = console.log.bind(console);
+
+ 		// 6 尾调用优化  
+ 		/* 尾调用就是只函数的最后一步是调用另外一个函数*/
+
+ 		function f(x){
+ 			return g(x);
+ 		}
+ 		   // 尾调用不一定出现在函数尾部，只要是最后一步操作即可。
+ 		   function f(x) {
+ 		   	if (x > 0) {
+ 		   		return m(x)
+ 		   	}
+ 		   	return n(x);
+ 		   }	
+
+ 		   // 上面的函数m和n都属于尾调用 因为都是函数f的最后一步操作。
+
+
+ 		   /*
+			我们知道，函数调用会在内存形成一个“调用记录”，又称“调用帧”（call frame），保存调用位置和内部变量等
+			信息。如果在函数A的内部调用函数B，那么在A的调用帧上方，还会形成一个B的调用帧。等到B运行结束，将结果
+			返回到A，B的调用帧才会消失。如果函数B内部还调用函数C，那就还有一个C的调用帧，以此类推。所有的调用帧
+			，就形成一个“调用栈”（call stack）。
+
+			尾调用由于是函数的最后一步操作，所以不需要保留外层函数的调用帧，因为调用位置、内部变量等信息都不会再
+			用到了，只要直接用内层函数的调用帧，取代外层函数的调用帧就可以了
+
+ 		   */
+
+ 		   // 尾递归  函数调用自身，称为递归。如果尾调用自身，就称为尾递归。
+
+
+ 		   
+ 		</script> 
 </body>
 </html>
