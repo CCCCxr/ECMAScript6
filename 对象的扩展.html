@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+	//1. 属性的简洁表示法 
+	// ES6允许直接写入变量。
+	const name = "cxr";
+	const person = {name};
+	console.log(person); // {name:"cxr"} 
+	// 对象中的方法也可以简写
+	const o = {
+		method(){
+			return "hello";
+		}
+	}
+	// 等同于
+	const o2 = {
+		method:function(){
+			return "hello";
+		}
+	}
+	//2 属性名表达式 
+	//定义对象的属性有俩种方法。
+	const obj = {};
+	 // 1 
+	 obj.foo = true;
+	 // 2
+	 obj["a"+"bc"] = 123;
+	// ES5中如果使用字面量方式定义对象，只能使用第一种方法定义属性。
+	var o3 = {
+		name:"c"
+	}
+	// ES6则可以使用第二种
+	var o4 = {
+		name:"c",
+		["a"+"ge"]:24,
+		["s"+"ay"](){
+			console.log("age:",this.age)
+		}
+	}
+	console.log(o4.age); //24
+	o4.say();  //age: 24  方法名也同样适用
+
+	//3 方法的name属性。 
+	 //对象方法的name属性也返回函数名(即方法名)
+	 const o5 = {
+	 	sayName(){
+
+	 	}
+	 }
+	 console.log(o5.sayName.name); //sayName
+	 /*
+		如果对象的方法使用了取值函数（getter）和存值函数（setter），则nam
+		e属性不是在该方法上面，而是该方法的属性的描述对象的get和set属性上
+		面，返回值是方法名前加上get和set
+		*/
+
+	//4 object.is(); 比较俩个值是否相等。
+		/*
+			ES5只有 == 和 === ，前者会自动转换数据类型，后者的NaN
+			不等于自身，以及+0等于-0
+		*/	
+	Object.is("foo","foo"); // true
+	Object.is(NaN,NaN)// true
+
+	//5 Object.assign() 用于对象的合并，将源对象的所有可枚举属性，复制的到目标对象
+	const target = {a:1};
+	const source1 = {b:1};
+	const source2 = {c:1};
+	Object.assign(target,source1,source2);
+	console.log(target); // {a:1,b:1,c:1} 
+
+	// 改方法的参数第一个为目标对象，后面的参数都是源对象。
+	// 如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
+	// 如果只有一个参数，这会直接返回该参数。
+	// 如果参数不是对象，则会先转成对象，然后返回。
+
+
+	/*	
+		Object.assign方法实行的是浅拷贝，而不是深拷贝。也就是说，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
+		target与source之间的同名属性会直接替换。
+		Object.assign可以用来处理数组，但是会把数组视为对象。
+		Object.assign只能进行值的复制，如果要复制的值是一个取值函数，那么将求值后再复制。
+	*/
+
+	// 6 对象的可枚举属性和遍历
+
+	/*
+		对象的每个属性都有一个描述对象，用来控制该属性的行为。
+		Object.getOwnPropertyDescriptor方法可以获取该属性的描述对象。
+		描述对象中的enumerable属性表示是否可被枚举，如果为false，则某些操作会忽略该属性。
+		for...in  Object.keys() JSON.stringify() Object.assign()  这4个操作都会忽略改属性。
+	*/
+
+	//ES6一共有5个方法来遍历对象的属性。
+	/*
+		1 for...in 循环遍历对象自身的和继承的可枚举属性（不含 Symbol 属性）。
+		2 Object.keys返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。
+		3 Object.getOwnPropertyNames返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名。
+		4 Object.getOwnPropertySymbols返回一个数组，包含对象自身的所有 Symbol 属性的键名。
+		5 Reflect.ownKeys返回一个数组，包含对象自身的所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举
+	*/
+
+	// 7 Object.getOwnPropertyDescriptors() 
+
+		// Object.getOwnPropertyDescriptor返回的是某个对象属性的描述对象，而这个方法返回
+		// 指定对象所有自身属性的描述对象
+
+		const obj2 = {
+			foo : 123,
+			get bar() { return 'abc' }
+		};
+		console.log(Object.getOwnPropertyDescriptors(obj2));
+		// { foo:
+		//    { value: 123,
+		//      writable: true,
+		//      enumerable: true,
+		//      configurable: true },
+		//   bar:
+		//    { get: [Function: get bar],
+		//      set: undefined,
+		//      enumerable: true,
+		//      configurable: true } }
+
+		// 该方法引入的目的是为了解决Object.assign()无法正确拷贝get属性和set属性的问题
+		const source3 = {
+			set foo (val){
+				console.log(val)
+			}
+		};
+		const target1 = {};
+		Object.assign(target1,source3);
+		console.log(Object.getOwnPropertyDescriptor(target1,"foo"));
+		// { value: undefined,
+		//   writable: true,
+		//   enumerable: true,
+		//   configurable: true }
+
+		//sourec3的foo是一个赋值函数，Object.assign的方法总是拷贝属性的值，二不会拷贝它背
+		//后的赋值和取值方法。
+
+
+		
+	</script> 
+</body>
+</html>

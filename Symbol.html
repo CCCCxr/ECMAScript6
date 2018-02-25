@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		//ES6多了一种原始数据类型：Symbol,表示独一无二的值，是JavaScript的第七种数据类型。
+
+		// 通过Symbol函数生成
+
+		let s = Symbol();
+		typeof s //symbol
+
+		// 这样的话对象的属性名可以有俩种类型，一种是原有的字符串，另外一种就是symbol类型。
+		// 凡是symbol类型的属性名都是独一无二的 不会与其他属性名造成冲突。
+
+		// symbol可以接受一个字符串作为参数，表示对symbol实例的描述，方便区分。
+
+		let s1 = Symbol("foo");
+		let s2 = Symbol("bar");
+
+		s1,s2; //Symbol(foo) Symbol(bar) 
+		s1.toString(),s2.toString(); // "Symbol(foo)"  "Symbol(bar)"
+		// 如果symbol的参数是一个对象，就会调用该对象的toString方法，将其转为字符串，然后再
+		//生成一个symbol值。
+
+		const obj = {
+			toString() {
+				return 'abc';
+			}
+		};
+		const sym = Symbol(obj);
+		sym // Symbol(abc)
+
+		/*
+		  注意点:Symbol接收的参数只是一个描述，并不代表2个同样参数的Symbol的值是相等的；
+				Symbol类型的值不能与其他类型的值运算，会报错。但是可以显式的转为字符串，
+				也可以转换成布尔值，但不能为数值。
+		*/
+
+
+		// 2 作为属性名的Symbol 
+		 /*
+			由于Symbol都不相等的特性，Symbol的值可以作为标识符，用于对象的属性名，防止被改写
+			或者覆盖
+		 */
+
+		let mySymbol = Symbol();
+
+		// 第一种写法 
+		let a = {};
+		a[mySymbol] = "hello";
+		// 第二种 
+		let a2 = {
+			[mySymbol] :"hello"
+		}
+		// 第三种
+		let a3 = {};
+		Object.defineProperty(a3, mySymbol, { value: 'Hello!' });
+		a[mySymbol]; // hello
+		a2[mySymbol]; // hello
+
+		// 通过调用方括号写法和defineProperty方法来将对象的属性名指定为Symbol的值
+		// 使用Symbol值最为对象属性名时，不能使用点运算符。
+
+
+		//4 属性名的遍历
+		//通过Object.getOwnPropertySymbols方法可以获取指定对象的所有用作属性名的Symbol的值
+		// 该方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
+
+		const obj2 = {};
+
+		let A = Symbol("A");
+		let B = Symbol("B");
+
+		obj2[A] = "a";
+		obj2[B] = "b";
+
+		Object.getOwnPropertySymbols(obj2); // [Symbol(A), Symbol(B)]
+
+
+		//5 Symbol.for(),Symbol.keyFor();
+
+		/*
+			Symbol.for()方法 接收一个字符串作为参数，然后搜索有没有以该参数作为名称的Symbol
+			值，如果有则返回，没有就新建一个以该字符串为名称的Symbol值。
+			还可以让我们使用同一个Symbol值。
+		*/
+
+		let v1 = Symbol.for("foo");
+		let v2 = Symbol.for("foo");
+
+		console.log(v1 === v2); // true
+
+		/*
+		  Symbol()与Symbol.for()方法都能生成一个新的Symbol值，区别在于Symbol.for()
+		  会将生成的值登记在全局环境中供搜索，而Symbol不会。
+		  Symbol.for()不会每调用一次就生成一个值，而且会先检查存不存在，不存在才会新建，
+		  Symbol()则会每调用一次都产生一个新值。
+		*/ 
+
+
+		//Symbol.keyFor() 返回一个已登记的Symbol类型值的key,没登记过则返回undefined;
+		console.log(Symbol.keyFor(v1)); //foo
+
+		// 除了定义自己使用的Symbol值以外，ES6还提供了11个内置的Symbol值，指向语言内部使用的方法。
+
+</script>
+</body>
+</html>
