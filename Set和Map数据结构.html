@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		// Set和Map数据结构。
+		  /*
+			Set 是一个类数组的数据结构，但是成员都是唯一的，没有重复的值。
+			Set 本身是一个构造函数，用来生成Set的值。
+			可以接受一个数组，或者可遍历的数据结构来进行初始化。
+			向Set添加数据的时候并不会转换数据类型，而且NaN是等于自身的。
+		  */
+		let s = new Set([1,2,3,4]);
+		[...s]; // [1,2,3,4];
+
+		// 因此也可以通过Set进行数组去重。[...new Set(array)]; 
+		let arr = [1,2,2,3,21,2,3,1,1,1];
+		[...new Set(arr)] // [1,2,3,21];
+
+		//Array.from方法可以将 Set 结构转为数组。 
+		const items = new Set([1, 2, 3, 4, 5]);
+		const array = Array.from(items);
+
+		//这就提供了去除数组重复成员的另一种方法。
+
+		function dedupe(array) {
+		  return Array.from(new Set(array));
+		}
+
+		dedupe([1, 1, 2, 3]) // [1, 2, 3]
+
+		/*
+			Set实例的属性：Set.prototype.constructor，Set.prototype.size
+						  前者是Set本身的构造函数，后者返回Set实例成员的总数。
+			Set实例的方法分俩大类：操作方法和遍历方法。			  
+		*/
+
+		//操作方法:add(),delete(),has(),clear()
+
+		//add() 添加数据,但不会添加已经有的数据，返回Set解构本身。
+			let s1 = new Set(); 
+			[1,2,3,4,5,5,5].forEach((x) => s1.add(x));
+			[...s1] // [1, 2, 3, 4, 5] 
+
+			let s2 = new Set();
+			s2.add(1).add(2).add(2);
+			[...s2];// [1, 2]
+
+		//delete() 	删除Set实例的某个成员，返回布尔值
+			s2.delete(2);
+			[...s2]; // [1];
+
+		// has() 判断传入的参数是否为Set的成员，返回布尔值。
+			s2.has(1) //true
+			s2.has(2) //false
+		// clear() 清除Set中所有的成员。
+			s1.clear();
+			[...s1]; //[]
+
+		// 遍历方法：keys(),values(),entries(),forEach()。
+		// Set的遍历顺序就是插入顺序。
+
+		// 由于Set结构没有键名，所以keys和values方法的行为完全一致。
+
+		let s3 = new Set(["red","blue","green"]);
+
+		for (let item of s3.keys()) {
+			console.log(item);
+		}
+		// red
+		// blue	
+		// green
+		
+		for (let item of s3.values()) {
+			console.log(item);
+		}
+		// red
+		// blue	
+		// green
+
+		//entries() 方法返回的遍历器，同时包括键名和键值，所以每次输出一个数组，它的两个成员完全相等。
+
+		for (let item of s3.entries()) {
+			console.log(item);
+		}
+		// ["red", "red"]
+		// ["blue", "blue"]
+		// ["green", "green"]
+		
+		//可以省略values方法，直接用for...of循环遍历 Set。
+
+		for (let x of s3) {
+		  console.log(x);
+		}
+		// red
+		// blue	
+		// green
+
+		//forEach() 和数组的forEach方法一样，用于对每个成员执行某种操作，没有返回值。
+		let set = new Set([1,2,5]);
+		set.forEach((val,key) => console.log(key + ' : ' + val))
+		// 1 : 1
+		// 2 : 2
+		// 5 : 5
+
+		// 通过扩展运算符可以将数组的map和filter方法间接用于 Set 了
+
+		let set2 = new Set([1, 2, 3]);
+		set2 = new Set([...set2].map(x => x * 2)); // 返回Set结构：{2, 4, 6}
+
+		let set3 = new Set([1, 2, 3, 4, 5]);
+		set3 = new Set([...set3].filter(x => (x % 2) == 0));
+		// 返回Set结构：{2, 4}
+		
+	</script>
+</body>
+</html>
