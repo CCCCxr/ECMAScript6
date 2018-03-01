@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		
+	/**
+	 * 1. Promise
+	 * Promise是一种异步编程的一种解决方案，比较传统的解决方案--回调函数和事件--
+	 * 更合理的强大。
+	 * Promise简单来说就是一个容器，里面保存着某个未来才会结束的事件(通常是一个异步操作)的结果
+	 * 从语法上说，Promise 是一个对象，从它可以获取异步操作的消息。
+	 * Promise 提供统一的API，各种异步操作都可以用同样的方法进行处理。
+	 * 
+	 * 对象的特点：
+    		1：状态不受到外部音响。Promise对象代表一个异步操作，总共有3种状态：pending(进行中)，
+    		fulfilled(已成功),rejected(已失败)，只有异步操作的结果，可以决定当前是哪种
+
+    		2：一旦状态改变，就不会在变，任何时候都能得到这个结果。状态改变只有俩种可能：从pending到
+    		fulfilled和pending到rejected.只要出现这俩种情况，状态就凝固了，不会在变了，这时就称为
+    		resolved(已定型)。如果改变已经发生了，你再对Promise对象添加回调函数，也会立即得到这个结果。
+    		这与事件（Event）完全不同，事件的特点是，如果你错过了它，再去监听，是得不到结果的。
+	 *
+	 */
+
+	 //2. 用法 
+	    // Promise对象是一个构造函数，用来生成新的Promise实例
+	    const promise = new Promise(function(resolve,reject){
+	    	// if (/* 异步操作成功 */) {
+	    	// 	resolve(value)
+	    	// } else {
+	    	// 	reject(value)
+	    	// }
+	    });
+
+	    /*
+			构造函数接受一个函数作为参数，该函数的俩个参数分别是resolve和reject。
+			它们是俩个函数，由Javascript引擎提供，不用自己部署。
+	    */
+
+	    // resolve函数的作用是将Promise对象的状态从未完成变成成功。在异步操作成功时调用，并将异步
+	    // 操作的结果，作为参数传递出去。reject则是Promise对象变成失败时调用的函数，并将失败的结果传递出去。
+
+	    // Promise实例生成以后，可以用then方法分别指定resolve状态和reject状态的回调函数。
+	    promise.then(function(value){
+
+	    },function(value){
+
+	    })
+
+	    // then方法的俩个回调函数前者是resolve的回调，后者是reject的回调，并且后者是可选的。
+
+	    function timeout(ms){
+	    	return new Promise((resolve,reject) => {
+	    		setTimeout(resolve, ms, 'done');  //  "done" 字符串属于附加属性，用于给前面函数调用时传入的参数
+	    	});
+	    }
+	    timeout(1000).then((val) => {
+	    	console.log(val);
+	    })
+	    /*
+			timeout方法返回一个Promise实例，表示一段时间以后才会发生的结果。过了指定的时间（ms参数）以后，
+			Promise实例的状态变为resolved，就会触发then方法绑定的回调函数
+	    */
+
+	    // Promise创建之后会立即调用
+
+	    let pro = new Promise((resolve,reject) => {
+	    	console.log("Promise");
+	    	resolve();
+	    });
+
+	    pro.then(()=>{
+	    	console.log("resolved")
+	    })
+	    console.log("Hi"); 
+
+	    // Promise
+	    // Hi
+	    // resolved
+
+	    /*
+	    	Promise 新建后立即执行，所以首先输出的是Promise。然后，then方法指定的回调函数，
+	    	将在当前脚本所有同步任务执行完才会执行，所以resolved最后输出。
+			先输入"Promise"，之后输入了"Hi"，最后才输入"resolved"
+	    */
+
+	    const getJSON = (url) => {
+	    	const promise = new Promise((resolve,reject) => {
+	    		const handler = () => {
+	    			if (this.readyState !== 4) {
+	    				return;
+	    			}
+	    			if (this.status === 200) {
+	    				resolve(this.response);
+	    			} else {
+	    				reject(new Error(this.statusText))
+	    			}
+	    		}
+
+	    		const client = new XMLHttpRequest();
+	    		client.open("GET",url);
+	    		client.onreadystatechange = handler;
+	    		client.responseType = "json";
+	    		client.setRequestHeader("Accept", "application/json");
+	    		client.send();
+	    	});
+	    }
+
+	    getJSON("/test.json").then(function(json) {
+			console.log('Contents: ' + json);
+		}, function(error) {
+		    console.error('出错了', error);
+		});
+	    /*
+	    上面代码中，getJSON是对 XMLHttpRequest 对象的封装，用于发出一个针对 JSON 数据的
+	    HTTP 请求，并且返回一个Promise对象。需要注意的是，在getJSON内部，resolve函数和
+	    reject函数调用时，都带有参数。如果调用resolve函数和reject函数时带有参数，那么它
+	    们的参数会被传递给回调函数。
+	    */
+
+	    //resolve函数的参数除了正常的值以外，还可能是另一个 Promise 实例，比如像下面这样。
+
+	    const p1 = new Promise((resolve,reject) => {
+	    	setTimeout(() => reject(new Error('fail')), 3000)	
+	    })
+	    const p2 = new Promise((resolve,reject) => {
+	    	setTimeout(() => {
+	    		resolve(p1)
+	    	},1000);
+	    })		
+	    p2.then(result => console.log(result))
+	      .catch(error => console.log(error)) // Error: fail
+
+
+	    // 上面将p1作为参数，即一个异步操作的结果是返回另一个异步操作,这时p1的状态就会
+	    // 传递给p2，也就是说p1决定了p2的状态，如果p1的状态是pending，那么p2的回调函数就会
+	    // 等待p1的状态改变；如果p1的状态已经是resolved或者rejected，那么p2的回调函数将
+	    //会立刻执行。
+
+	    /*
+			一般来说，调用resolve或reject以后，Promise 的使命就完成了，
+			后继操作应该放到then方法里面，而不应该直接写在resolve或reject的后面。
+			所以，最好在它们前面加上return语句，这样就不会有意外。
+	    */
+	    new Promise((resolve, reject) => {
+		  return resolve(1);
+		  // 后面的语句不会执行
+		  console.log(2);
+		})
+
+	    //3.Promise.prototype.then()
+
+	    // then()方法定义在源性对象Promise.prototype上的，它的作用就是为Promise 实例添加状态改变时的回调函数。
+
+	    //then方法的第一个参数是resolved状态的回调函数，第二个参数（可选）是rejected状态的回调函数。
+
+	    //then方法返回的是一个新的Promise实例，但不是原来的那个。因此可以采用链式写法。
+	    getJSON("/text.json").then(
+	    	json => json.post
+	    	).then(
+	    	post => { }
+	    	)
+	    // 当第一个回调函数完成以后，会将返回结果作为参数，传入第二个回调函数。
+
+	    // 前一个回调函数返回的也有可能还是一个promise对象，这时后一个回调，会等待该Promis对象的状态发生变化，才会被调用。
+	    getJSON("/text.json").then(json => {
+	    	getJSON(json.commentURL)
+	    }).then(
+	     	comment => console.log("resolved: ", comments),
+	    	err => console.log("rejected: ", err)
+	    )
+
+	    //4.Promise.prototype.catch()
+
+	    //Promise.prototype.catch方法是.then(null,rejection)的别名，用于处理发生异步操作和前一个回调函数运行时发生的错误
+
+	    getJSON("/text.json").then(()=>{
+	    	// ...
+	    }).catch(error =>{
+	    	// 处理 getJSON 和 前一个回调函数运行时发生的错误
+  			console.log('发生错误！', error);
+	    })
+
+	</script>
+</body>
+</html>
