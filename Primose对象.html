@@ -349,6 +349,36 @@
 		Promise.resolve("foo")
 		// 等价于
 		new Promise(resolve => resolve("foo"));
-	</script>
+
+		// Promise.resolve() 参数分成4种情况 
+			// 1 如果是Promise实例，则不做任何修改
+			// 2 参数具有then方法的对象，会将这个对象转换成Promise对象，然后立刻执行对象里面的then方法。
+			let thenable {
+				then:function(resolve,reject){
+					resolve(42)
+				}
+			}
+
+			let pp1 = Promise.resolve(thenable);
+
+			pp1.then(function(val) {
+				console.log(val)
+			})  // 42 
+
+			// 3 参数不是具有then方法的对象，或根本就不是对象,则返回一个新的Promise对象，状态为resolved
+			// 4 不带参数，直接返回一个resolved状态的Promise对象，
+
+
+			// 9.Promise.reject() 也返回一个新的实例，该实例状态为rejected.
+
+			const pp2 = Promise.reject('出错了');
+			// 等同于
+			const pp2 = new Promise((resolve, reject) => reject('出错了'))
+
+			pp2.then(null, function (s) {
+			  console.log(s)
+			});
+			// 出错了
+	</script>	
 </body>
 </html>
