@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script >
+		// Iterator 和 for...of 循环	
+
+
+		// 1  遍历器的概念
+		 //主要是为了对表示"集合"类型的数据结构进行遍历操作。
+
+		 // Iterator 的作用有3个
+		 /*	
+			1.为各种数据结构,提供一个统一的、简便的接口。、
+			2.使得数据结构的成员能够按某种次序排列
+			3.为ES6新增的for...of消费。
+		 */
+
+		 /*Iterator的遍历过程就是创建一个指针对象，通过调用next()方法来依次获取成员的信息。
+		 	next()方法返回的是一个对象，包含value和done俩个属性，value表示值，done属性表示布尔值，是否遍历结束
+		 **/
+
+		 var it = makeIterator(["a","b"]);
+
+		 function makeIterator(array){
+		 	var nextIndex = 0;
+
+		 	return {
+		 		next(){
+		 			return nextIndex < array.length ? 
+		 			{value: array[nextIndex++]}:
+		 			{done:true}
+		 		}
+		 	}
+		 }
+
+		it.next();  // {value: "a"}
+		it.next();  // {value: "b"}
+
+		/*
+			由于 Iterator 只是把接口规格加到数据结构之上，所以，遍历器与它所遍历的
+			那个数据结构，实际上是分开的，完全可以写出没有对应数据结构的遍历器对象，
+			或者说用遍历器对象模拟出数据结构。
+		*/
+
+		var it1 = idMaker();
+
+		it1.next().value // 0
+		it1.next().value // 1
+		it1.next().value // 2
+		it1.next().value // 3
+
+		function idMaker(){
+			var index = 0;
+			return {
+				next(){
+					return {value:index++,done:false}
+				}
+			}
+		}
+
+		// 2默认的Iteratro接口 
+
+		/*
+			ES6规定默认的Iteratro结构部署在数据结构的[Symbol.iterator]属性。
+			属性本身是一个函数，是当前数据结构默认的遍历器生成函数，属性名是一个表达
+			式，返回Symbol对象的iterator属性。
+		*/
+
+		// 有些数据结构原生具备了Iterator接口，即不用任何处理，就可以被for...of遍历
+		// 除此之外，其他数据结构（主要是对象）的 Iterator 接口，都需要自己在Symbol.iterator属性上面部署，这样才会被for...of循环遍历。
+		
+		
+	</script>
+</body>
+</html>

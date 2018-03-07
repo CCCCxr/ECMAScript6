@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		// 1.Generator函数的基本概念
+
+		/*
+		 Generator函数相当于一个状态机，通过使用yield表达式来定义不同的状态，返回一个包含Generator状态的遍历器对象。
+		 通过调用遍历器对象的next()方法让指针指向下一个状态。也就是说每次调用next()方法，内部指针就从函数头部
+		 或上一次停下来的地方开始执行，直到遇到下一个yield表达式（或return语句）为止.
+		*/
+
+		// Generator函数有2个特征，1是function与函数名之间有个星号(*)，2是函数体内部使用yield表达式
+
+		function *helloGenerator(){
+			yield 'hello';
+			yield 'Generator';
+			return 'hello Generator';
+		}	
+
+		var h = helloGenerator();
+
+		h.next(); // {value: "hello", done: false}
+		h.next(); // {value: "Generator", done: false}
+		h.next(); // {value: "hello Generator", done: true} 
+		//每次调用next()方法会返回一个对象，它的value属性就是当前yield表达式的值，
+		//done属性的值false或true，表示遍历还没有结束或已经结束
+
+		/*
+			调用 Generator 函数，返回一个遍历器对象，代表 Generator 函数的内部指针。
+			以后，每次调用遍历器对象的next方法，就会返回一个有着value和done两个属性的对象。
+			value属性表示当前的内部状态的值，是yield表达式后面那个表达式的值；done属性是一个布尔值，表示是否遍历结束。
+		*/
+
+
+
+		// yield表达式 
+
+		//  Generator 函数返回的遍历器对象，只有调用next方法才会遍历下一个内部状态，所以其实提供了一种可以暂停执行的函数。yield表达式就是暂停标志。
+
+		/** 遍历器对象的next方法的运行逻辑：
+				遇到yield表达式就暂停执行后面的操作，将yield表达式的值作为返回对象的value的值，
+				下一次在调用next方法时，再继续往下执行，知道遇到下一个yield表达式。
+				如果没有遇到新的yield表达式，就一直运行到函数结束或者遇到return语句为止，并将return后面的值作为返回对象的
+				value值。
+				如果该函数没有return语句，则返回的对象的value属性值为undefined。
+		*/
+
+		//需要注意的是，yield表达式后面的表达式，只有当调用next方法、内部指针指向该语句时才会执行
+
+
+		// 与return不同的是 一个函数只能有一个return 而 Generator可以使用yield表达式返回一系列的值，但是每次遇到yield，
+		// 会暂停执行当前函数，下一次调用时再从该位置继续向后执行。
+
+		// 2.next()方法的参数
+ 			// yield表达式本身没有返回值，或者说返回undefined.可以通过next()方法带入一个参数，用来被当作上一个yield表达式的返回值。
+		function* f() {
+		  for(var i = 0; true; i++) {
+		    var reset = yield i;
+		    if(reset) { i = -1; }
+		  }
+		}
+
+		var g = f();
+
+		g.next() // { value: 0, done: false }
+		g.next() // { value: 1, done: false }
+		g.next(true) // { value: 0, done: false }
+
+		/*
+			上面代码先定义了一个可以无限运行的 Generator 函数f，如果next方法没有参数，每次运行到yield表达式，变量reset的值总
+			是undefined。当next方法带一个参数true时，变量reset就被重置为这个参数（即true），因此i会等于-1，下一轮循环就会从-1
+			开始递增。
+		*/
+
+		/*
+			这个功能有很重要的语法意义。Generator 函数从暂停状态到恢复运行，它的上下文状态（context）是不变的。
+			通过next方法的参数，就有办法在 Generator 函数开始运行之后，继续向函数体内部注入值。
+			也就是说，可以在 Generator 函数运行的不同阶段，从外部向内部注入不同的值，从而调整函数行为。
+		*/
+	</script>
+</body>
+</html>
