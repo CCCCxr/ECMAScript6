@@ -73,15 +73,95 @@
 
 		/*
 			上面代码先定义了一个可以无限运行的 Generator 函数f，如果next方法没有参数，每次运行到yield表达式，变量reset的值总
-			是undefined。当next方法带一个参数true时，变量reset就被重置为这个参数（即true），因此i会等于-1，下一轮循环就会从-1
-			开始递增。
+			是undefined。当next方法带一个参数true时，变量reset就被重置为这个参数（即true），因此i会等于-1，下一轮循环就会从-1开始递增。
 		*/
+		function *foo(x) {
+			var y = 2 * (yield (x + 1));
+			var z = yield (y / 3);
+			return (x + y + z);
+		}
 
+		var a = foo(5);
+		console.log(a.next()); // {value: 6, done: false}
+		console.log(a.next())  // {value: NaN, done: false} 
+		// 第二次调用next方法时没有传入参数，导致Y的值为2*undefined,即NaN,除3了以后还是NaN
+		console.log(a.next())  // {value: NaN, done: true}
+		// 第三次调用next方法时还是没有带参数，即z的undefined,返回的值是5+NaN+undefined，即NaN
+
+		var b = foo(5);
+
+		console.log(b.next()) // {value: 6, done: false}
+		console.log(b.next(12)) // { value:8, done:false }
+		// 第二次调用时，传入了12作为上一个yield的返回值，y的值为2*12=24，返回的是y/3的值也就是8
+		console.log(b.next(13)) // { value:42, done:true }
+		// 第三次调用将上一个yield的值，也是就是z的值设为13，而x为5，y为24，z为13，所以是42.
+
+
+		// 由于next方法的参数为上一个yield表达式的值，所以第一次调用next方法传入参数是无效的，会被直接忽略，只有第二次才有效。
 		/*
 			这个功能有很重要的语法意义。Generator 函数从暂停状态到恢复运行，它的上下文状态（context）是不变的。
 			通过next方法的参数，就有办法在 Generator 函数开始运行之后，继续向函数体内部注入值。
 			也就是说，可以在 Generator 函数运行的不同阶段，从外部向内部注入不同的值，从而调整函数行为。
 		*/
+
+		//3 for...of 
+
+		// for...of循环可以自动遍历Generator函数生成的Iterator对象，这样可以不调用next方法
+
+		function *foo() {
+			yield 1;
+			yield 2;
+			yield 3;
+			yield 4;
+			yield 5;
+		}
+
+		for (let v of foo()) {
+			console.log(v)
+		}
+
+		// 1 2 3 4 5
+
+		function *fibonacci() {
+			let [prve,curr] = [0,1] 
+			for(;;) {
+				[prve,curr] = [curr,prve+curr]
+				yield curr;
+			}
+		}
+		for (let n of fibonacci()) {
+		  if (n > 1000) break;
+		  console.log(n);
+		}
+
+		// 4 Generator.prototype.throw()
+
+		//Generator 返回的遍历器对象，都有一个throw()方法，可以在函数体外抛出错误，
+		// 然后再Generator函数体内捕获。
+
+		var g = function *() {
+			try{
+				yield;
+			}catch(e){
+				console.log("内部捕获",e)
+			}
+		}
+
+		var I = g();
+
+		try{
+			I.next();
+			I.throw("a");
+			I.throw("b");
+		}catch (e) {
+			console.log('外部捕获', e);
+		}
+		// 内部捕获 a
+		// 外部捕获 b
+
+		
+
+
 	</script>
 </body>
 </html>
