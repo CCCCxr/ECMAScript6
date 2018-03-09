@@ -139,6 +139,9 @@
 		//Generator 返回的遍历器对象，都有一个throw()方法，可以在函数体外抛出错误，
 		// 然后再Generator函数体内捕获。
 
+		//throw()方法接受一个参数，该参数会被catch语句接收。
+
+
 		var g = function *() {
 			try{
 				yield;
@@ -159,9 +162,143 @@
 		// 内部捕获 a
 		// 外部捕获 b
 
+		/*
+		 上面的代码中 遍历器对象i连续抛出了俩个错误，第一个被Generator函数的catch语句捕获，
+		 第二次由于已经被执行过了，不会再捕捉错误所以就被抛出从而被函数体外的catch语句捕获。
+		*/
+
+		/*
+		 如果Generator函数体内没有部署try...catch代码，那么throw方法抛出的错误将被外部的
+		 try...catch代码捕获。
+		*/
+
+		// throw捕获到错误了以后，会附带执行下一条yield表达式。
+
+		var gen = function *gener(){
+			try {
+				yield console.log("a");
+			}catch (e) {
+
+			};
+			yield console.log('b');
+			yield console.log('c');
+		}
+
+		var G = gen();
+
+		G.next() // a
+		G.throw() // b
+		G.next()  // c
+
+		/*
+		 一旦 Generator 执行过程中抛出错误，且没有被内部捕获，就不会再执行下去了。如果此后还调用next方
+		 法，将返回一个value属性等于undefined、done属性等于true的对象，即 JavaScript 引擎认为这个 
+		 Generator 已经运行结束了。	
+		*/
+
+		// Generator.prototype.return();
+
+		// Generator 函数返回的遍历器对象，还有一个return方法，可以返回给定的值，并且终结遍历 Generator 函数
+
+		function *gen2() {
+			yield 1;
+			yield 2;
+			yield 3;
+		}
+		var g = gen2();
+
+		g.next() //{value: 1, done: false};
+		g.return("foo") //{value: "foo", done: true};
+		g.next() //{value: undefined, done: true};
+
+		// 上面的代码中 遍历器对象g调用了return方法之后 返回对象的value值就变成了foo，done变成了ture,
+		// 终止了Generator的遍历，在调动next方法done的值都为ture.
+		// 如果return方法调用时，不提供参数，则返回值的value属性为undefined。
+
+		// 6.next()、throw()、return()的共同点。
+
+		// 本质上都是让Generator函数回复执行，并且使用不同的语句替换yield语句
+
+		// next()是将yield 表达式替换成一个值。
+		var gen3 = function *(x,y) {
+			let result = yield x + y;
+			return result; 
+		}
+
+		var g2 = gen3(1,2);
+		g2.next(); //{value: 3, done: false}  
+		g2.next(1) //{value: 1, done: true} 实际上是将 let result = yield x +y 替换成 let result = 1；
+
+		//throw()是将yield表达式替换成一个throw语句。
+
+		// g2.throw(new Error("出错了")); //Uncaught Error: 出错了
+		// 相当于将 let result = yield x + y
+		// 替换成 let result = throw(new Error('出错了'));
+
+		//return()是将yield表达式替换成一个return语句。
+		g2.return(2); // Object {value: 2, done: true}
+		// 相当于将 let result = yield x + y
+		// 替换成 let result = return 2;
+
+		// 7.yield* 表达式
+			//通常在一个Generator函数中调用另一个Generator函数是没有效果的。
+		function* foo2() {
+		  yield 'a';
+		  yield 'b';
+		}
+
+		function* bar2() {
+		  yield 'x';
+		  foo2();
+		  yield 'y';
+		}
+
+		for (let v of bar2()){
+		  console.log(v);
+		}
+		// "x"
+		// "y"
+		 // 所以要通过调用yield*表达式来在一个Generator函数里执行另外一个Genterator函数。
+		function* bar3() {                 // funciton *bar3(){
+			yield 'x';						  	 // yield 'x
+			yield* foo();    // 等同于           yield 'a';
+			yield 'y';                          // yield 'b';  
+												// yield 'y' };	
+		}
+
+		for (let v of bar3()){
+		  console.log(v);
+		}
+
+		function *inner(){
+			yield 'hello!'
+		}
+
+		function *outer1(){
+			yield 'open';
+			yield inner();
+			yield 'close';
+		}
+		var g6 = outer1()
+		g6.next().value // "open"
+		g6.next().value// 返回一个遍历器对象
+		g6.next().value // "close"
+
+		function *outer2(){
+			yield 'open';
+			yield* inner();
+			yield 'close';
+		}
+
+		var g7 = outer2();
+		console.log(g7.next().value); // open
+		console.log(g7.next().value); // hello!
+		console.log(g7.next().value); // close 
+
+		//上面代码中outer1没有使用yield*表达式，所以返回了一个遍历器对象，而outer2使用了yield表达式，
+		// 返回的是遍历器对象的内部值。
 		
-
-
+		
 	</script>
 </body>
 </html>
