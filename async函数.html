@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		// async 函数是什么？一句话，它就是 Generator 函数的语法糖。
+		// 当async函数执行时，遇到await就会停止等待，直到异步操作完整之后，再继续往下执行。
+
+		async function asyncReturn(value,ms){
+			await new Promise((resolve,reject) => {
+				setTimeout(resolve, ms);
+			})
+			return value;
+		}
+
+		// 上面的async函数返回了一个Promise对象，可以使用then方法添加回调。并且return返回的值，会成为then
+		// 方法回调函数的参数
+
+		asyncReturn("hello world",3000)
+			.then(value => {
+				console.log(value);
+			})
+			
+	</script>
+</body>
+</html>
